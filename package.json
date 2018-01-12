@@ -1,0 +1,19 @@
+{
+  "name": "wechat-web1",
+  "version": "1.0.0",
+  "description": "build by koa2,wechat,node",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milaiduoduo/wechatWeb.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milaiduoduo/wechatWeb/issues"
+  },
+  "homepage": "https://github.com/milaiduoduo/wechatWeb#readme"
+}
