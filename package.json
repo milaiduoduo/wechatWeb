@@ -18,6 +18,7 @@
   "homepage": "https://github.com/milaiduoduo/wechatWeb#readme",
   "dependencies": {
     "koa": "^2.4.1",
+    "request": "^2.83.0",
     "sha1": "^1.1.1"
   }
 }
