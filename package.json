@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/milaiduoduo/wechatWeb/issues"
   },
-  "homepage": "https://github.com/milaiduoduo/wechatWeb#readme"
+  "homepage": "https://github.com/milaiduoduo/wechatWeb#readme",
+  "dependencies": {
+    "koa": "^2.4.1",
+    "sha1": "^1.1.1"
+  }
 }
