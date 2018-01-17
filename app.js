@@ -23,5 +23,5 @@ let config = {
 }
 
 app.use(wechat(config.wechat));
-app.listen(3002);
-console.log('wechat server listening:3002.......')
+app.listen(2003);
+console.log('wechat server listening:2003.......')

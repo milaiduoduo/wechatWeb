@@ -1,12 +1,13 @@
 'use strict';
 const sha1 = require('sha1');
+const getRowBody = require('raw-body');
 const Wechat = require('./wechat');
+const util = require('./util');
 
 module.exports = function (opts) {
     var wechat = new Wechat(opts);
     return function*(next) {
-        console.log(this.query);
-        this.body = 'hi,wechat!';
+        // console.log('this.query:：：：',this.query);
         /*第一步身份验证*/
         // 需要配合的工作有：
         // 1、登录 微信公众平台：https://mp.weixin.qq.com，点击进入“开发者工具”，点击进入“公众平台测试账号”，配置url项目和token项目。
@@ -31,10 +32,41 @@ module.exports = function (opts) {
         let echostr = this.query.echostr;
         let str = [token, timestamp, nonce].sort().join('');
         let sha = sha1(str);
-        if (sha == signature) {
-            this.body = echostr + '';
-        } else {
-            this.body = 'not the right server.'
+        console.log('method: ', this.method,typeof this.method);
+        if (this.method === 'GET') {
+            console.log('in Get------------------');
+            if (sha != signature) {
+                this.body = 'get:not the right server.'
+            } else {
+                this.body = echostr + '';
+            }
+        } else if (this.method === 'POST') {
+            if (sha != signature) {
+                this.body = 'post: not the right server.'
+                return false;//???????????
+            }
+           //拿到xml数据
+            let data = yield getRowBody(this.req, {
+                length: this.length,
+                limit: '1mb',
+                encoding: this.charset
+            })
+            // console.log('xml data: ', data.toString());
+
+            // xml数据转化成Json，使用xml2js模块，但它转化出来的JS的value是一个数组，所以还需要进一步转化。
+            let content = yield util.parseXMLAsync(data);
+            // console.log('content parse: ',content);
+
+            // 测试用数据
+            // var obj = `{ "xml":
+            // { "ToUserName": [ "gh_4008fb0c9dd7",["10","20"],"ll" ],
+            //     "FromUserName": [ "oy8In057SgEFn0qJWLvCfJABEkkU"],
+            //     "CreateTime": [ "1516178799" ],
+            //     "MsgType": [ "text" ],
+            //     "Content": [ "k" ],
+            //     "MsgId": [ "6511938357042227392" ] } }`;
+            let message = util.formatMessage(content.xml);
+            console.log('message:: ',message);
         }
     }
 }
