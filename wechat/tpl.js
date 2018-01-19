@@ -4,8 +4,8 @@ var heredoc = require('heredoc');
 
 var tpl = heredoc(function(){/*
 <xml>
- <ToUserName><![CDATA[<%= message.FromUserName %>]]></ToUserName>
- <FromUserName><![CDATA[<%= message.ToUserName %>]]></FromUserName>
+ <ToUserName><![CDATA[<%= toUserName %>]]></ToUserName>
+ <FromUserName><![CDATA[<%= fromUserName %>]]></FromUserName>
  <CreateTime><%= createTime %></CreateTime>
  <MsgType><![CDATA[<%= msgType %>]]></MsgType>
  <% if(msgType === 'text'){%>
@@ -50,7 +50,7 @@ var tpl = heredoc(function(){/*
 
 var compile = ejs.compile(tpl);
 module.exports = {
-    compile: compile
+    compiled: compile
 }
 
 

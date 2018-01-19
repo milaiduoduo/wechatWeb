@@ -67,13 +67,12 @@ Wechat.prototype.updateAccessToken = function () {
 }
 
 Wechat.prototype.reply = function(){
-    var content = this.body;
+    var sendContent = this.body;
     var message = this.receivedMessage;
 
-    console.log('构造函数Wechat里的content,message：',content,message)
 
-    var xml = util.tpl(content,message);
-
+    var xml = util.tpl(sendContent,message);
+    console.log('回复的xml:',xml);
     this.status = 200;
     this.type = 'application/xml';
     this.body = xml;

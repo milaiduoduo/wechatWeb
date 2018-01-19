@@ -4,7 +4,7 @@ const getRowBody = require('raw-body');
 const Wechat = require('./wechat');
 const util = require('./util');
 
-module.exports = function (opts) {
+module.exports = function (opts, handler) {
     var wechat = new Wechat(opts);
     return function*(next) {
         // console.log('this.query:：：：',this.query);
@@ -53,7 +53,7 @@ module.exports = function (opts) {
                 limit: '1mb',
                 encoding: this.charset
             })
-            // console.log('xml data: ', data.toString());
+            console.log('xml data: ', data.toString());
 
             // xml数据转化成Json，使用xml2js模块，但它转化出来的JS的value是一个数组，所以还需要进一步转化。
             let content = yield util.parseXMLAsync(data);
@@ -71,11 +71,10 @@ module.exports = function (opts) {
 
             this.receivedMessage = message;
 
-            console.log('receivedMessage:: ', message);
+            //console.log('receivedMessage:: ', message);
 
-            //yield handler.call(this, next);//??????
-
-            yield next.call(this);
+            //转到外层逻辑，获得对this.body的设置。也是在外层设置返回内容。
+            yield handler.call(this, next);
 
             wechat.reply.call(this);
         }
