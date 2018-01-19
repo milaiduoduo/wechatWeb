@@ -1,5 +1,5 @@
 'use strict'
-exports.reply = function* (next){
+exports.setReplyContent = function* (next){
     console.log('in handler!!!!!!');
     var message = this.receivedMessage;
     console.log('receivedMessage:::',message);
