@@ -42,24 +42,25 @@ function _formatArray(itemValues, tempArray, key) {
 exports.parseXMLAsync = parseXMLAsync;
 exports.formatMessage = formatMessage;
 
-exports.tpl = function(content,message){
+exports.tpl = function(sendContent,receivedmessage){
     let info={};
     let type = 'text';
-    let fromUserName = message.FromUserName;
-    let toUserName = message.ToUserName;
+    let fromUserName = receivedmessage.FromUserName;
+    let toUserName = receivedmessage.ToUserName;
 
-    if(Array.isArray(content)){
+    sendContent = sendContent || '';
+    if(Array.isArray(sendContent)){
         type = 'news';
     }
 
-    type = content.type || type;
-    info.content = content;
+    type = sendContent ? sendContent.type : type;
+    info.content = sendContent;
     info.createTime = new Date().getTime();
     info.msgType = type;
     info.toUserName = fromUserName;
     info.fromUserName = toUserName;
 
-    console.log('info in util.js::',info);
+    console.log('returned info in util.js::',info);
 
     return tpl.compiled(info);
 }
