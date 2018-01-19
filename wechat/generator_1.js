@@ -33,7 +33,7 @@ module.exports = function (opts) {
         let echostr = this.query.echostr;
         let str = [token, timestamp, nonce].sort().join('');
         let sha = sha1(str);
-        console.log('method: ', this.method,typeof this.method);
+        console.log('method: ', this.method, typeof this.method);
         if (this.method === 'GET') {
             console.log('in Get------------------');
             if (sha != signature) {
@@ -41,12 +41,13 @@ module.exports = function (opts) {
             } else {
                 this.body = echostr + '';
             }
-        } else if (this.method === 'POST') {
+        }
+        else if (this.method === 'POST') {
             if (sha != signature) {
                 this.body = 'post: not the right server.'
                 return false;//???????????
             }
-           //拿到xml数据
+            //拿到xml数据
             let data = yield getRowBody(this.req, {
                 length: this.length,
                 limit: '1mb',
@@ -67,25 +68,24 @@ module.exports = function (opts) {
             //     "Content": [ "k" ],
             //     "MsgId": [ "6511938357042227392" ] } }`;
             let message = util.formatMessage(content.xml);
-            console.log('message:: ',message);
 
-            if(message.MsgType === 'event'){
-                if(message.Event === 'subscribe'){
-                    console.log('in---------------------');
-                    var now = new Date().getTime();
-                    that.status = 200;
-                    that.type = 'application/xml';
-                    that.body = '<xml>' +
-                        '<ToUserName><![CDATA['+message.FromUserName+']]></ToUserName>  ' +
-                        '<FromUserName><![CDATA['+message.ToUserName+']]></FromUserName>  ' +
-                        '<CreateTime>'+now+'</CreateTime>' +
-                        '<MsgType><![CDATA[text]]></MsgType>  ' +
-                        '<Content><![CDATA[Hi,终于见面了！！]]></Content>  ' +
-                        '</xml>';
-                    console.log('this.body:',that);
-                    return;
-                }
-            }
+            this.receivedMessage = message;
+
+            console.log('receivedMessage:: ', message);
+
+            //yield handler.call(this, next);//??????
+
+            yield next.call(this);
+
+            wechat.reply.call(this);
         }
     }
 }
+
+
+
+
+
+
+
+
