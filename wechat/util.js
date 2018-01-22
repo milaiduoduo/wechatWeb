@@ -48,20 +48,18 @@ exports.tpl = function (sendContent, receivedmessage) {
     let fromUserName = receivedmessage.FromUserName;
     let toUserName = receivedmessage.ToUserName;
 
-
-    sendContent = sendContent || '';
     if (Array.isArray(sendContent)) {
         type = 'news';
     }
 
-    type = (sendContent && sendContent.type) ? sendContent.type : type;
+    type = sendContent.type || type;
     info.content = sendContent;
     info.createTime = new Date().getTime();
     info.msgType = type;
     info.toUserName = fromUserName;
     info.fromUserName = toUserName;
 
-    console.log('returned info in util.js,sendContent::', info, sendContent);
+    console.log('returned info in util.js::', info);
 
     return tpl.compiled(info);
 }
