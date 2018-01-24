@@ -42,12 +42,14 @@ exports.setReplyContent = function*(next) {
                 reply = '一只小马耍滑梯';
                 break;
             case '2':
-                console.log('__dirname:::',__dirname);
-                let data = yield wechatApi.uploadTempMaterial('image', __dirname + '/public/temp1.jpg')
+                //console.log('__dirname:::',__dirname);
+                let data = yield wechatApi.uploadTempMaterial('image', __dirname + '/public/temp2.jpg')
                 reply = {
                     type: 'image',
-                    mediaId: data.mediaId
+                    mediaId: data.media_id
                 }
+                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
+                console.log('回复的图片数据：',reply);
                 break;
             case '3':
                 reply = '三只小马爬雪山';

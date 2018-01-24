@@ -20,43 +20,52 @@ function Wechat(opts) {
 
 }
 
-Wechat.prototype.test = function(){
-    this.fetchAccessToken().then(function(data){
-        console.log('fetchAccessToken回调参数值：',data);
-    });
-}
 
 Wechat.prototype.fetchAccessToken = function (data) {
     let that = this;
     let tokenVaildFlag = false;
-    console.log('this.access_token && this.expires_in:',this.access_token, this.expires_in);
+    //console.log('this.access_token && this.expires_in:',this.access_token, this.expires_in);
+
     if(this.access_token && this.expires_in){
-        if(this.isvalidAccessToken(this)){
-            console.log('提前验证成功，返回Promise.resolve(this)');
+        tokenVaildFlag = this.isValidAccessToken(this);
+        //console.log('第一次验证tokent结果:',tokenVaildFlag);
+        if(tokenVaildFlag){
+            //console.log('已有验证成功，返回Promise.resolve(this)');
             return Promise.resolve(this);
         }
     }
 
+    // 执行new的时候
     return this.getAccessToken().then(function (data) {
-        tokenVaildFlag = that.isValidAccessToken(data);
-        if (tokenVaildFlag) {
-            console.log('验证成功，只需要返回data！！！')
-            return data;
+        let _data={};
+        try {
+            _data=JSON.parse(data);
         }
-        else {
-            console.log('验证失败，需要重新请求new token！！！')
+        catch(e){
+            //console.log('JSON化失败，需要重新请求new token！！！')
             return that.updateAccessToken();
         }
-    }).then(function (data) {
-        // 是updataAccessToken的回调
-        that.access_token = data.access_token;
-        that.expires_in = data.expires_in;
-        if (!tokenVaildFlag) {
-            console.log('验证失败，重新保存token！！！')
-            that.saveAccessToken(data);
+
+        tokenVaildFlag = that.isValidAccessToken(_data);
+        if (tokenVaildFlag) {
+            //console.log('验证成功，只需要返回data！！！',_data);
+            return _data;
         }
-        console.log('最后会在这里返回，Promise.resolve(data)');
-        return Promise.resolve(data);
+        else {
+            //console.log('验证失败，需要重新请求new token！！！')
+            return that.updateAccessToken();
+        }
+    }).then(function (_data) {
+        // 是updataAccessToken的回调
+        that.access_token = _data.access_token;
+        that.expires_in = _data.expires_in;
+        if (!tokenVaildFlag) {
+            //console.log('验证失败时，重新保存token！！！')
+            that.saveAccessToken(_data);
+        }
+        console.log('最后会在这里返回，Promise.resolve(_data),_data:',_data.access_token,_data.expires_in);
+
+        return Promise.resolve(_data);
     })
     // .catch(function (e) {
     //     console.log('err in getAccessToken!!!!!:', e);
@@ -101,31 +110,25 @@ Wechat.prototype.uploadTempMaterial = function(type,filepath){
     let form = {
         media: fs.createReadStream(filepath)
     };
-    console.log('in uploadTempMaterial 上传素材方法中,media！！！',form.media);
     return new Promise(function(resolve,reject){
-       //console.log('that.fetchAccessToken()：：：：：：：：',that.fetchAccessToken());
         that.fetchAccessToken().then(function(data){
             let url = api.uploadTempMaterialUrl + 'access_token=' + data.access_token + '&type=' + type;
-            request.post({url: url,form:form, json: true}, function (error, response, body) {
-                let _data = body;
-                if(!error){
-                    if(_data){
-                        console.log('post返回的结果是？:',body);
-                        return Promise.resolve(_data);
-                        //resolve(_data)
+            Promise.resolve(request.post({url: url, formData: form}, function optionalCallback(err, httpResponse, body) {
+                let _data = JSON.parse(body);
+                if (!err) {
+                    if (_data) {
+                        // console.log('post返回的结果是？:', typeof body);//string
+                        resolve(_data)
                     }
-                    else{
-                        return Promise.reject(error);
+                    else {
+                        reject(err);
                         // throw new Error('upload temporary material failed!!!!')
                     }
                 }
-                return Promise.reject(error);
 
+                reject(err);
+            }))
 
-            })
-            //     .catch(function(err){
-            //     reject(err);
-            // })
         })
     })
 }
