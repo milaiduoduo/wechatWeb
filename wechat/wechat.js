@@ -113,7 +113,7 @@ Wechat.prototype.uploadTempMaterial = function(type,filepath){
     return new Promise(function(resolve,reject){
         that.fetchAccessToken().then(function(data){
             let url = api.uploadTempMaterialUrl + 'access_token=' + data.access_token + '&type=' + type;
-            Promise.resolve(request.post({url: url, formData: form}, function optionalCallback(err, httpResponse, body) {
+            request.post({url: url, formData: form}, function optionalCallback(err, httpResponse, body) {
                 let _data = JSON.parse(body);
                 if (!err) {
                     if (_data) {
@@ -125,9 +125,23 @@ Wechat.prototype.uploadTempMaterial = function(type,filepath){
                         // throw new Error('upload temporary material failed!!!!')
                     }
                 }
-
                 reject(err);
-            }))
+            });
+            // Promise.resolve(request.post({url: url, formData: form}, function optionalCallback(err, httpResponse, body) {
+            //     let _data = JSON.parse(body);
+            //     if (!err) {
+            //         if (_data) {
+            //             // console.log('post返回的结果是？:', typeof body);//string
+            //             resolve(_data)
+            //         }
+            //         else {
+            //             reject(err);
+            //             // throw new Error('upload temporary material failed!!!!')
+            //         }
+            //     }
+            //
+            //     reject(err);
+            // }))
 
         })
     })
