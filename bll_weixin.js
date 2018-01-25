@@ -42,19 +42,10 @@ exports.setReplyContent = function*(next) {
                 reply = '一只小马耍滑梯';
                 break;
             case '2':
-                //console.log('__dirname:::',__dirname);
-                let data = yield wechatApi.uploadTempMaterial('image', __dirname + '/public/temp2.jpg')
-                reply = {
-                    type: 'image',
-                    mediaId: data.media_id
-                }
-                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
-                console.log('回复的图片数据：',reply);
-                break;
-            case '3':
                 reply = '三只小马爬雪山';
                 break;
-            case '4':
+            case '3':
+                // 回复图文列表，图片是使用的链接。
                 reply = [{
                     title: 'Node.js的世界',
                     description: '只是个描述而已',
@@ -82,6 +73,39 @@ exports.setReplyContent = function*(next) {
                     url: 'https://www.baidu.com'
                 }]
 
+                break;
+            case '4':
+                // 临时图片上传并回复
+                var data = yield wechatApi.uploadTempMaterial('image', __dirname + '/public/temp2.jpg')
+                reply = {
+                    type: 'image',
+                    mediaId: data.media_id
+                }
+                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
+                console.log('回复的图片数据：',reply);
+                break;
+            case '5':
+                // 永久图片上传并回复
+                var data = yield wechatApi.uploadPerMaterial('other', __dirname + '/public/per1.jpg');
+                reply = {
+                    type: 'image',
+                    mediaId: data.media_id
+                }
+                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
+                console.log('回复的永久图片数据：',reply);
+                break;
+            case '6':
+                // 永久视频上传并回复
+            // {type:'video',description:'{"title":"Really a nice place","introduction":"easy??"}'}
+                var data = yield wechatApi.uploadPerMaterial('video', __dirname + '/public/perV1.mp4');
+                reply = {
+                    type: 'video',
+                    title:'回复的永久视频',
+                    description:'就是它！',
+                    mediaId: data.media_id
+                }
+                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
+                console.log('回复的永久视频数据：',reply);
                 break;
             default:
                 reply = `额，你说的${receivedMessage.Content}太复杂了`;
