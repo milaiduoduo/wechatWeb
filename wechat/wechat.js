@@ -11,8 +11,12 @@ const api = {
     permanent: {
         uploadPermNews: `${prefix}material/add_news?`,
         uploadPermPics: prefix + 'media/uploadimg?',
-        uploadPermOther: prefix + 'material/add_material?'
+        uploadPermOther: prefix + 'material/add_material?',
+        getPermMaterialCount: prefix+'material/get_materialcount?',
+        getPermMaterial: prefix + 'material/get_material?',
+        getPermMaterialList: prefix +'material/batchget_material?'
     }
+
 }
 function Wechat(opts) {
     var that = this;
@@ -152,7 +156,7 @@ Wechat.prototype.uploadTempMaterial = function (type, filepath) {
     })
 }
 
-Wechat.prototype.uploadPerMaterial = function (type, material) {
+Wechat.prototype.uploadPermMaterial = function (type, material) {
     let that = this;
     let form = {};
     // permanent
@@ -162,14 +166,15 @@ Wechat.prototype.uploadPerMaterial = function (type, material) {
         uploadUrl = api.permanent.uploadPermNews;
         form = material
     } else {
-        if (type == 'pic') uploadUrl = api.permanent.uploadPermPics;
-        else if (type === 'other') uploadUrl = api.permanent.uploadPermOther;
+        if (type == 'picInnews') uploadUrl = api.permanent.uploadPermPics;
+        else uploadUrl = api.permanent.uploadPermOther;
         form.media = fs.createReadStream(material);
     }
 
     return new Promise(function (resolve, reject) {
         that.fetchAccessToken().then(function (data) {
             let url = `${uploadUrl}access_token=${data.access_token}`;
+            if(type!='news' && type!='picInnews') url += `&type=${type}`;
             console.log('进入uploadPerMaterial,data:', data);
             console.log('进入uploadPerMaterial,url:', url);
 
@@ -203,6 +208,70 @@ Wechat.prototype.uploadPerMaterial = function (type, material) {
     })
 
 }
+
+Wechat.prototype.getMaterialCount = function(){
+    let that = this;
+    return new Promise(function (resolve, reject) {
+        that.fetchAccessToken().then(function (data) {
+            let url = api.permanent.getPermMaterialCount + 'access_token=' + data.access_token ;
+            console.log('获取素材的url:',url);
+            request.get({url: url, json:true}, function optionalCallback(err, httpResponse, body) {
+                let _data = body;
+                if (!err) {
+                    if (_data) {
+                        // console.log('post返回的结果是？:', typeof body);//string
+                        resolve(_data)
+                    }
+                    else {
+                        reject(err);
+                        // throw new Error('upload temporary material failed!!!!')
+                    }
+                }
+                reject(err);
+            });
+        })
+    })
+}
+
+Wechat.prototype.getMaterialList = function(type){
+    let that = this;
+    return new Promise(function(resolve,reject){
+        that.fetchAccessToken().then(function (data){
+          let url = api.permanent.getPermMaterialList + 'access_token=' + data.access_token ;
+          console.log('获取素材list的url',url);
+          let form = {
+              "type":"image",
+              "offset":"0",
+              "count":"1"
+          };
+            let opts = {
+                method: 'POST',
+                url: url,
+                json: true,
+                body:form
+            }
+          console.log('typeof form:',typeof form);
+          console.log('获取素材list传递的参数：',form);
+          request.post({url:url,body:form,json:true},function(err,httpResponse,body){
+          // request(opts,function(err,httpResponse,body){
+              let _data = body;
+              if(!err){
+                  if(_data){
+                      resolve(_data);
+                  }
+                  else{
+                      reject(err);
+                  }
+              }
+              else{
+                  reject(err);
+              }
+          })
+
+        })
+    })
+}
+
 
 Wechat.prototype.reply = function () {
     var sendContent = this.body;

@@ -74,7 +74,8 @@ exports.setReplyContent = function*(next) {
                 }]
 
                 break;
-            case '4':
+// 临时素材-------------------------------------------------------------------------
+            case '11':
                 // 临时图片上传并回复
                 var data = yield wechatApi.uploadTempMaterial('image', __dirname + '/public/temp2.jpg')
                 reply = {
@@ -82,30 +83,58 @@ exports.setReplyContent = function*(next) {
                     mediaId: data.media_id
                 }
                 // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
-                console.log('回复的图片数据：',reply);
+                console.log('回复的图片数据：', reply);
                 break;
-            case '5':
+// 永久素材--------------------------------------------------------------------------
+            case '21':
                 // 永久图片上传并回复
-                var data = yield wechatApi.uploadPerMaterial('other', __dirname + '/public/per1.jpg');
+                var data = yield wechatApi.uploadPermMaterial('image', __dirname + '/public/per1.jpg');
                 reply = {
                     type: 'image',
                     mediaId: data.media_id
                 }
                 // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
-                console.log('回复的永久图片数据：',reply);
+                console.log('回复的永久图片数据：', reply);
                 break;
-            case '6':
+            case '22':
                 // 永久视频上传并回复
-            // {type:'video',description:'{"title":"Really a nice place","introduction":"easy??"}'}
-                var data = yield wechatApi.uploadPerMaterial('video', __dirname + '/public/perV1.mp4');
+                // {type:'video',description:'{"title":"Really a nice place","introduction":"easy??"}'}
+                var data = yield wechatApi.uploadPermMaterial('video', __dirname + '/public/perV1.mp4');
                 reply = {
                     type: 'video',
-                    title:'回复的永久视频',
-                    description:'就是它！',
+                    title: '回复的永久视频',
+                    description: '就是它！',
                     mediaId: data.media_id
                 }
                 // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
-                console.log('回复的永久视频数据：',reply);
+                console.log('回复的永久视频数据：', reply);
+                break;
+            case '23':
+                // 永久语音上传并回复
+                var data = yield wechatApi.uploadPermMaterial('voice', __dirname + '/public/per_M1.mp3');
+                reply = {
+                    type: 'voice',
+                    mediaId: data.media_id
+                }
+                // console.log('上传后的图片数据：',typeof data,'---------',data.media_id);
+                console.log('回复的永久语音数据：', reply);
+                break;
+            case '24':
+                // 永久图文
+                break;
+            case '31':
+                //获取永久素材数量
+                var data = yield wechatApi.getMaterialCount();
+                console.log('永久素材数量数据为：', data);
+                //解决“引号乱码问题，在ejs中使用<%=替换<%-
+                reply = JSON.stringify(data);
+                break;
+            case '32':
+                //获取永久素材列表
+                var data = yield wechatApi.getMaterialList('image');
+                console.log('永久素材数据列表为：', data);
+                //解决“引号乱码问题，在ejs中使用<%=替换<%-
+                reply = JSON.stringify(data);
                 break;
             default:
                 reply = `额，你说的${receivedMessage.Content}太复杂了`;
