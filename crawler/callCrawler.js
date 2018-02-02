@@ -5,7 +5,7 @@ crawler.crawlerWeb(url).then((data)=>{
 
     try {
         let html = data;
-        // console.log('爬到的数据是：', data);
+        //console.log('爬到的数据是：', data);
         let hoursesList = bll_crawler.filterCrawlerDataByRegion(html);
         bll_crawler.printHouseInfo(hoursesList);
     }

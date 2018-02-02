@@ -51,6 +51,7 @@ var tpl = heredoc(function(){/*
 
 
 var compile = ejs.compile(tpl);
+console.log('编译返回方法？',compile);
 module.exports = {
     compiled: compile
 }

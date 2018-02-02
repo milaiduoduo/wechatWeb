@@ -61,6 +61,8 @@ exports.tpl = function (sendContent, receivedmessage) {
 
     console.log('returned info in util.js::', info);
 
+    //使用ejs的compiled方法，第一次调用返回一个方法，第二次调用这个返回的方法，参数为要渲染页面的数据。
+    //tpl.compiled(要渲染页面的数据)
     return tpl.compiled(info);
 }
 

@@ -72,7 +72,6 @@ exports.setReplyContent = function*(next) {
                     picUrl: 'http://pic128.nipic.com/file/20170504/25230470_161040886038_2.jpg',
                     url: 'https://www.baidu.com'
                 }]
-
                 break;
 // 临时素材-------------------------------------------------------------------------
             case '11':
